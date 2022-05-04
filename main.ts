@@ -11,6 +11,8 @@ function CHECKMODE () {
         コメット(true)
     } else if (MODE == 5) {
         赤ドクドク(true)
+    } else if (MODE == 6) {
+        バウンド(true)
     } else {
         MODE = 1
         CHECKMODE()
@@ -30,7 +32,7 @@ function コメット (flg: boolean) {
                 色相 = i * 60 + j * 5
                 彩度 = 200
                 輝度 = 25
-                strip.setPixelColor(LEDNo, neopixel.hsl(0, 0, 0))
+                strip.setPixelColor(LEDNo, neopixel.hsl(色相, 彩度, 輝度))
                 j += 1
             }
             i += 1
@@ -38,9 +40,9 @@ function コメット (flg: boolean) {
     } else if (flg == false) {
         strip.rotate(-1)
         strip.show()
-        電流値()
-        basic.pause(10)
     }
+    電流値()
+    basic.pause(10)
 }
 function 虹色ウェーブ (flg2: boolean) {
     if (flg2 == true) {
@@ -58,7 +60,7 @@ function 虹色ウェーブ (flg2: boolean) {
                 色相 = i * 24 + j * 3
                 彩度 = 200
                 輝度 = 25
-                strip.setPixelColor(LEDNo, neopixel.hsl(0, 0, 0))
+                strip.setPixelColor(LEDNo, neopixel.hsl(色相, 彩度, 輝度))
                 j += 1
             }
             i += 1
@@ -72,6 +74,7 @@ function 虹色ウェーブ (flg2: boolean) {
 }
 input.onSound(DetectedSound.Loud, function () {
     MODE += 1
+    MODE = 6
     CHECKMODE()
 })
 function レインボー点灯 (flg3: boolean) {
@@ -118,6 +121,70 @@ function 白流れ星 (flg4: boolean) {
         strip.showColor(neopixel.colors(NeoPixelColors.Black))
     }
 }
+function バウンド (flg: boolean) {
+    if (flg == true) {
+        j = 0
+        j = 0
+    } else if (flg == false) {
+        j += 0.05
+        if (j == 0) {
+            x = 150
+            y = 0
+        } else if (j == 7.85) {
+            LEDNo = 999
+            x = 120
+            y = 30
+            j += 1.57
+        } else if (j == 1727) {
+            x = 90
+            y = 60
+            j += 1.57
+        } else if (j == 2669) {
+            x = 60
+            y = 90
+            j += 1.57
+        } else if (j == 3611) {
+            x = 30
+            y = 120
+            j += 1.57
+        } else {
+        	
+        }
+        if (j % 9.42 != 0) {
+            i = 0
+            for (let index = 0; index < 30; index++) {
+                i += 1
+                strip.setPixelColor(LEDNo + i, neopixel.colors(NeoPixelColors.Black))
+            }
+        }
+        x = strip.length() - y - j % 7.85 / 3.14 * 60
+        if (Math.cos(j) <= 0) {
+            LEDNo = -1 * Math.cos(j)
+            LEDNo = (x - y) * LEDNo + y
+        } else {
+            LEDNo = Math.cos(j)
+            LEDNo = (x - y) * LEDNo + y
+        }
+        i = 0
+        for (let index = 0; index < 30; index++) {
+            i += 1
+            if (j < 9.42) {
+                strip.setPixelColor(LEDNo + i, neopixel.colors(NeoPixelColors.Red))
+            } else if (j <= 18.84) {
+                strip.setPixelColor(LEDNo + i, neopixel.colors(NeoPixelColors.Green))
+            } else if (j <= 28.26) {
+                strip.setPixelColor(LEDNo + i, neopixel.colors(NeoPixelColors.Yellow))
+            } else if (j <= 37.68) {
+                strip.setPixelColor(LEDNo + i, neopixel.colors(NeoPixelColors.Blue))
+            } else {
+                strip.setPixelColor(LEDNo + i, neopixel.colors(NeoPixelColors.Purple))
+            }
+        }
+    }
+    strip.show()
+    電流値()
+    basic.pause(10)
+}
 function SHOWAURA () {
     if (MODE == 1) {
         レインボー点灯(false)
@@ -129,12 +196,14 @@ function SHOWAURA () {
         コメット(false)
     } else if (MODE == 5) {
         赤ドクドク(false)
+    } else if (MODE == 6) {
+        バウンド(false)
     } else {
         MODE = 1
     }
 }
 input.onButtonPressed(Button.B, function () {
-    MODE = 1
+    MODE = 6
     CHECKMODE()
 })
 function 電流値 () {
@@ -167,7 +236,7 @@ function レインボー切り替え (flg6: boolean) {
         色相 += 10
         彩度 = 200
         輝度 = 25
-        strip.showColor(neopixel.hsl(0, 0, 0))
+        strip.showColor(neopixel.hsl(色相, 彩度, 輝度))
         電流値()
         basic.pause(100)
         if (色相 >= 260) {
@@ -175,6 +244,8 @@ function レインボー切り替え (flg6: boolean) {
         }
     }
 }
+let y = 0
+let x = 0
 let 明るさ = 0
 let SIN = 0
 let 輝度 = 0
@@ -189,7 +260,7 @@ let strip: neopixel.Strip = null
 strip = neopixel.create(DigitalPin.P0, 150, NeoPixelMode.RGB)
 music.setVolume(30)
 soundExpression.happy.play()
-MODE = 1
+MODE = 6
 CHECKMODE()
 basic.forever(function () {
     SHOWAURA()
